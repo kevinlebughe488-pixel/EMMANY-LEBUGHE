@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { AnimatePresence, motion, useMotionValueEvent } from 'framer-motion';
+import { AnimatePresence, motion, useMotionValueEvent, useReducedMotion } from 'framer-motion';
 import { sections } from '../data.js';
 import { useDepthLabel } from './DepthGauge.jsx';
 import { CloseIcon, MenuIcon } from './Icons.jsx';
@@ -11,6 +11,7 @@ export default function Nav({ active, progress }) {
   const [open, setOpen] = useState(false);
   const toggleRef = useRef(null);
   const depth = useDepthLabel(progress);
+  const reduce = useReducedMotion();
 
   useMotionValueEvent(progress, 'change', (v) => setScrolled(v > 0.01));
 
@@ -18,17 +19,14 @@ export default function Nav({ active, progress }) {
     if (!open) return;
     const onKey = (e) => e.key === 'Escape' && setOpen(false);
     document.addEventListener('keydown', onKey);
-    // Fige la page derrière le menu. « overflow: hidden » seul ne suffit pas (iPhone, et
-    // <html> a déjà un overflow-x) : on fixe le body à sa position actuelle, puis on la rend.
-    const y = window.scrollY;
-    const { body, documentElement: html } = document;
-    Object.assign(body.style, { position: 'fixed', top: `-${y}px`, left: '0', right: '0', width: '100%' });
+    // Bloque le défilement sur <html> (le body ne suffit pas : <html> a déjà un overflow-x).
+    // Ne pas fixer le body : la page n'aurait plus de hauteur, la progression sauterait à 100 %
+    // et toutes les animations liées au défilement bougeraient derrière le menu.
+    const html = document.documentElement;
     html.style.overflow = 'hidden';
     return () => {
       document.removeEventListener('keydown', onKey);
-      Object.assign(body.style, { position: '', top: '', left: '', right: '', width: '' });
       html.style.overflow = '';
-      window.scrollTo({ top: y, behavior: 'instant' });
       toggleRef.current?.focus({ preventScroll: true });
     };
   }, [open]);
@@ -43,43 +41,56 @@ export default function Nav({ active, progress }) {
     }, 60);
   };
 
+  // Rideau qui descend ; simple fondu si l'utilisateur limite les animations.
+  const curtain = reduce
+    ? { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: 0.2 } }
+    : {
+        initial: { clipPath: 'inset(0 0 100% 0)' },
+        animate: { clipPath: 'inset(0 0 0% 0)' },
+        exit: { clipPath: 'inset(0 0 100% 0)' },
+        transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+      };
+
   return (
-    <header className={`nav${scrolled ? ' is-scrolled' : ''}`}>
-      <div className="container nav__inner">
-        <a className="nav__brand" href="#accueil" aria-label="Retour en haut">
-          <span className="nav__brand-mark" aria-hidden="true">
-            PEL
-          </span>
-          <motion.span className="nav__depth" aria-hidden="true">
-            {depth}
-          </motion.span>
-        </a>
+    <>
+      <header className={`nav${scrolled ? ' is-scrolled' : ''}`}>
+        <div className="container nav__inner">
+          <a className="nav__brand" href="#accueil" aria-label="Retour en haut">
+            <span className="nav__brand-mark" aria-hidden="true">
+              PEL
+            </span>
+            <motion.span className="nav__depth" aria-hidden="true">
+              {depth}
+            </motion.span>
+          </a>
 
-        <nav aria-label="Navigation principale">
-          <ul className="nav__links">
-            {links.map((s) => (
-              <li key={s.id}>
-                <a href={`#${s.id}`} className={active === s.id ? 'is-active' : undefined}>
-                  {s.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
+          <nav aria-label="Navigation principale">
+            <ul className="nav__links">
+              {links.map((s) => (
+                <li key={s.id}>
+                  <a href={`#${s.id}`} className={active === s.id ? 'is-active' : undefined}>
+                    {s.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
 
-        <button
-          ref={toggleRef}
-          className="nav__toggle"
-          type="button"
-          aria-expanded={open}
-          aria-controls="mobile-menu"
-          aria-label="Ouvrir le menu"
-          onClick={() => setOpen(true)}
-        >
-          <MenuIcon />
-        </button>
-      </div>
+          <button
+            ref={toggleRef}
+            className="nav__toggle"
+            type="button"
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            aria-label="Ouvrir le menu"
+            onClick={() => setOpen(true)}
+          >
+            <MenuIcon />
+          </button>
+        </div>
+      </header>
 
+      {/* Hors du <header> : son flou d'arrière-plan (backdrop-filter) enfermerait le menu dans ses 64 px. */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -88,10 +99,7 @@ export default function Nav({ active, progress }) {
             role="dialog"
             aria-modal="true"
             aria-label="Menu"
-            initial={{ clipPath: 'inset(0 0 100% 0)' }}
-            animate={{ clipPath: 'inset(0 0 0% 0)' }}
-            exit={{ clipPath: 'inset(0 0 100% 0)' }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            {...curtain}
           >
             <button
               className="nav__toggle mobile-menu__close"
@@ -120,6 +128,6 @@ export default function Nav({ active, progress }) {
           </motion.div>
         )}
       </AnimatePresence>
-    </header>
+    </>
   );
 }

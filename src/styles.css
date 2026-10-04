@@ -246,8 +246,7 @@ p {
 }
 .nav.is-scrolled {
   background: rgba(15, 12, 10, 0.82);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px); /* -webkit- ajouté au build : l’écrire à la main supprimait cette ligne */
   border-color: var(--border);
 }
 .nav__inner {
@@ -316,6 +315,13 @@ p {
   background: transparent;
   color: var(--fg);
   cursor: pointer;
+  /* remplace le rectangle bleuté du navigateur au toucher */
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+.nav__toggle:active {
+  background: rgba(245, 239, 230, 0.08);
+  border-color: var(--fg-faint);
 }
 @media (min-width: 900px) {
   .nav__links {
@@ -329,7 +335,7 @@ p {
 .mobile-menu {
   position: fixed;
   inset: 0;
-  z-index: 55;
+  z-index: 70; /* au-dessus de la barre de progression */
   background: var(--bg);
   display: flex;
   flex-direction: column;
@@ -359,6 +365,11 @@ p {
   font-weight: 800;
   text-decoration: none;
   border-bottom: 1px solid var(--border);
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.15s;
+}
+.mobile-menu a:active {
+  color: var(--oil);
 }
 .mobile-menu a span {
   font-family: var(--font-body);
