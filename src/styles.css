@@ -519,6 +519,13 @@ p {
 /* ------------------------------------------------------------------
    Profil : révélation mot à mot
    ------------------------------------------------------------------ */
+/* Le profil remonte par-dessus la fin du hero : il apparaît dès que les couches
+   ont recouvert la surface, au lieu de laisser un long écran vide. */
+.profile {
+  z-index: 2;
+  margin-top: -70vh;
+  padding-top: clamp(3rem, 8vw, 5rem);
+}
 .profile__grid {
   display: grid;
   gap: clamp(2.5rem, 6vw, 5rem);
@@ -1334,6 +1341,9 @@ main,
   .terrain,
   .skills {
     height: auto;
+  }
+  .profile {
+    margin-top: 0;
   }
   .hero__sticky,
   .pin__sticky {
