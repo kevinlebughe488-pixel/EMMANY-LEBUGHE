@@ -3,6 +3,7 @@ import { MotionConfig, useMotionValueEvent, useScroll } from 'framer-motion';
 import { sections } from './data.js';
 import { initAnalytics, trackSectionViews } from './analytics.js';
 import Nav from './components/Nav.jsx';
+import AmbientField from './components/AmbientField.jsx';
 import DepthGauge from './components/DepthGauge.jsx';
 import Hero from './components/Hero.jsx';
 import Profile from './components/Profile.jsx';
@@ -64,6 +65,7 @@ export default function App() {
       <a className="skip-link" href="#profil">
         Aller au contenu
       </a>
+      <AmbientField />
       <Nav active={active} progress={scrollYProgress} />
       <DepthGauge active={active} stops={stops} progress={scrollYProgress} />
       <main>

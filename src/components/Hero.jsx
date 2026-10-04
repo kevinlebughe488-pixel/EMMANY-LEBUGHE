@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
+import { motion, useReducedMotion, useTransform } from 'framer-motion';
+import { useSmoothScroll, wavePath } from '../hooks.js';
 import { person } from '../data.js';
 import { PinIcon } from './Icons.jsx';
 import portrait480 from '../assets/portrait-480.webp';
@@ -10,12 +11,12 @@ const ease = [0.22, 1, 0.36, 1];
 // Couches de terrain qui montent et recouvrent la surface pendant le défilement.
 // La dernière a la couleur du fond : à la fin, l'écran est entièrement « sous terre ».
 const layers = [
-  { color: 'var(--stratum-1)', from: 74, rise: 0.78, wave: 'M0 40 C 180 10, 360 60, 600 30 S 1000 0, 1200 35 V80 H0 Z' },
-  { color: 'var(--stratum-2)', from: 80, rise: 0.86, wave: 'M0 30 C 220 60, 420 5, 640 35 S 1020 60, 1200 25 V80 H0 Z' },
-  { color: 'var(--stratum-3)', from: 86, rise: 0.93, wave: 'M0 45 C 160 20, 380 50, 620 25 S 980 45, 1200 30 V80 H0 Z' },
-  { color: 'var(--stratum-4)', from: 91, rise: 0.98, wave: 'M0 35 C 240 55, 460 15, 700 40 S 1040 20, 1200 40 V80 H0 Z' },
-  { color: 'var(--bg)', from: 96, rise: 1.0, wave: 'M0 40 C 200 25, 420 55, 640 35 S 1000 25, 1200 38 V80 H0 Z' },
-];
+  { color: 'var(--stratum-1)', from: 74, rise: 0.78, amp: 14, phase: 0, speed: 38 },
+  { color: 'var(--stratum-2)', from: 80, rise: 0.86, amp: 11, phase: 1.3, speed: 30 },
+  { color: 'var(--stratum-3)', from: 86, rise: 0.93, amp: 13, phase: 2.6, speed: 46 },
+  { color: 'var(--stratum-4)', from: 91, rise: 0.98, amp: 10, phase: 3.9, speed: 34 },
+  { color: 'var(--bg)', from: 96, rise: 1.0, amp: 12, phase: 5.2, speed: 52 },
+].map((l) => ({ ...l, wave: wavePath({ amp: l.amp, phase: l.phase }) }));
 
 function Layer({ layer, index, progress, reduce, offset }) {
   const from = layer.from + offset;
@@ -36,14 +37,17 @@ function Layer({ layer, index, progress, reduce, offset }) {
       animate={{ opacity: 1 }}
       transition={{ delay: 0.5 + index * 0.08, duration: 0.8, ease }}
     >
-      <svg
-        viewBox="0 0 1200 80"
+      {/* La crête de chaque couche ondule en continu, même quand on ne défile pas. */}
+      <motion.svg
+        viewBox="0 0 2400 80"
         preserveAspectRatio="none"
-        style={{ position: 'absolute', bottom: 'calc(100% - 1px)', left: 0, width: '100%', height: '7vw', minHeight: 36 }}
+        style={{ position: 'absolute', bottom: 'calc(100% - 1px)', left: 0, width: '200%', height: '7vw', minHeight: 36 }}
+        animate={reduce ? undefined : { x: index % 2 ? ['-50%', '0%'] : ['0%', '-50%'] }}
+        transition={{ duration: layer.speed, repeat: Infinity, ease: 'linear' }}
         aria-hidden="true"
       >
         <path d={layer.wave} fill={layer.color} />
-      </svg>
+      </motion.svg>
     </motion.div>
   );
 }
@@ -51,7 +55,7 @@ function Layer({ layer, index, progress, reduce, offset }) {
 export default function Hero() {
   const ref = useRef(null);
   const reduce = useReducedMotion();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] });
+  const scrollYProgress = useSmoothScroll(ref);
 
   const contentY = useTransform(scrollYProgress, [0, 0.8], ['0vh', '-18vh']);
   const contentOpacity = useTransform(scrollYProgress, [0.35, 0.75], [1, 0]);
@@ -123,25 +127,43 @@ export default function Hero() {
             </motion.div>
           </div>
 
+          {/* Le portrait flotte doucement, entouré d'anneaux de « courbes de niveau » qui tournent en continu. */}
           <motion.div
-            className="hero__portrait"
-            style={reduce ? undefined : { scale: portraitScale, rotate: portraitRotate }}
-            initial={{ clipPath: 'inset(100% 0 0 0)' }}
-            animate={{ clipPath: 'inset(0% 0 0 0)' }}
-            transition={{ delay: 0.3, duration: 1.2, ease }}
+            className="hero__portrait-wrap"
+            animate={reduce ? undefined : { y: [0, -10, 0] }}
+            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
           >
-            <motion.img
-              src={portrait760}
-              srcSet={`${portrait480} 480w, ${portrait760} 760w`}
-              sizes="(min-width: 900px) 360px, 60vw"
-              width="760"
-              height="1082"
-              alt="Portrait de Pierre Emmanuel Lebughe Litite, en costume, relisant un document"
-              initial={{ scale: 1.25 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.3, duration: 1.6, ease }}
-              fetchpriority="high"
-            />
+            <motion.svg
+              className="hero__rings"
+              viewBox="0 0 200 200"
+              aria-hidden="true"
+              animate={reduce ? undefined : { rotate: 360 }}
+              transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
+            >
+              <circle cx="100" cy="100" r="96" fill="none" stroke="var(--oil)" strokeOpacity="0.45" strokeDasharray="2 6" />
+              <circle cx="100" cy="100" r="86" fill="none" stroke="var(--seismic)" strokeOpacity="0.25" strokeDasharray="30 10 4 10" />
+              <circle cx="100" cy="4" r="3" fill="var(--oil)" />
+            </motion.svg>
+            <motion.div
+              className="hero__portrait"
+              style={reduce ? undefined : { scale: portraitScale, rotate: portraitRotate }}
+              initial={{ clipPath: 'inset(100% 0 0 0)' }}
+              animate={{ clipPath: 'inset(0% 0 0 0)' }}
+              transition={{ delay: 0.3, duration: 1.2, ease }}
+            >
+              <motion.img
+                src={portrait760}
+                srcSet={`${portrait480} 480w, ${portrait760} 760w`}
+                sizes="(min-width: 900px) 360px, 60vw"
+                width="760"
+                height="1082"
+                alt="Portrait de Pierre Emmanuel Lebughe Litite, en costume, relisant un document"
+                initial={{ scale: 1.25 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.3, duration: 1.6, ease }}
+                fetchpriority="high"
+              />
+            </motion.div>
           </motion.div>
         </motion.div>
 

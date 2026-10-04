@@ -1,5 +1,6 @@
 import { useRef } from 'react';
-import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
+import { motion, useReducedMotion, useTransform } from 'framer-motion';
+import { useSmoothScroll } from '../hooks.js';
 import { skillStrata } from '../data.js';
 
 // Chaque groupe de compétences se dépose comme une couche sédimentaire :
@@ -46,7 +47,7 @@ function Stratum({ stratum, order, progress, reduce }) {
 export default function Skills() {
   const ref = useRef(null);
   const reduce = useReducedMotion();
-  const { scrollYProgress: p } = useScroll({ target: ref, offset: ['start start', 'end end'] });
+  const p = useSmoothScroll(ref);
   // Affichage du haut vers le bas : la couche la plus récente en haut.
   const stacked = [...skillStrata].reverse();
 

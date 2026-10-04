@@ -18,9 +18,13 @@ function Cert({ cert, index }) {
 
   return (
     <motion.article ref={ref} className="cert" style={reduce ? undefined : { rotateX, y, opacity }}>
-      <div className="cert__logo">
+      <motion.div
+        className="cert__logo"
+        animate={reduce ? undefined : { y: [0, -6, 0], rotate: [0, index ? 2 : -2, 0] }}
+        transition={{ duration: 5 + index, repeat: Infinity, ease: 'easeInOut' }}
+      >
         <img src={logos[cert.logo]} alt={`Logo ${cert.short}`} width="240" height="240" loading="lazy" />
-      </div>
+      </motion.div>
       <div>
         <h3>{cert.org}</h3>
         <ul>

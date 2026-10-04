@@ -1,5 +1,6 @@
 import { useRef } from 'react';
-import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
+import { motion, useReducedMotion, useTransform } from 'framer-motion';
+import { useSmoothScroll } from '../hooks.js';
 import { fieldwork } from '../data.js';
 import terrain600 from '../assets/terrain-600.webp';
 import terrain810 from '../assets/terrain-810.webp';
@@ -36,7 +37,7 @@ function Dot({ index, progress }) {
 export default function Fieldwork() {
   const ref = useRef(null);
   const reduce = useReducedMotion();
-  const { scrollYProgress: p } = useScroll({ target: ref, offset: ['start start', 'end end'] });
+  const p = useSmoothScroll(ref);
 
   // La photo s'ouvre depuis une petite fenêtre jusqu'au plein écran.
   const clipPath = useTransform(
@@ -82,6 +83,12 @@ export default function Fieldwork() {
       <div className="pin__sticky">
         <div className="terrain__stage">
           <motion.div className="terrain__photo" style={{ clipPath }}>
+            {/* Lent mouvement de caméra permanent (effet Ken Burns), même à l'arrêt. */}
+            <motion.div
+              style={{ position: 'absolute', inset: 0 }}
+              animate={{ scale: [1, 1.07, 1], x: ['0%', '-1.5%', '0%'] }}
+              transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
+            >
             <motion.img
               src={terrain810}
               srcSet={`${terrain600} 600w, ${terrain810} 810w`}
@@ -92,6 +99,7 @@ export default function Fieldwork() {
               loading="lazy"
               style={{ scale: imgScale }}
             />
+            </motion.div>
             <motion.div className="terrain__shade" style={{ opacity: shadeOpacity }} />
           </motion.div>
 

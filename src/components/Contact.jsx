@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { interests, person } from '../data.js';
 import { track } from '../analytics.js';
+import { wavePath } from '../hooks.js';
 import { ChatIcon, MailIcon, PhoneIcon } from './Icons.jsx';
 
 const ease = [0.22, 1, 0.36, 1];
@@ -28,6 +29,20 @@ export default function Contact() {
   return (
     <section id="contact" className="reservoir" ref={ref}>
       <motion.div className="reservoir__oil" style={{ scaleY: reduce ? 1 : oil }} aria-hidden="true" />
+      {/* Surface de l'huile qui ondule en permanence au bas de la section. */}
+      <div className="reservoir__surface" aria-hidden="true">
+        {[0, 1].map((i) => (
+          <motion.svg
+            key={i}
+            viewBox="0 0 2400 80"
+            preserveAspectRatio="none"
+            animate={reduce ? undefined : { x: i ? ['-50%', '0%'] : ['0%', '-50%'] }}
+            transition={{ duration: i ? 14 : 20, repeat: Infinity, ease: 'linear' }}
+          >
+            <path d={wavePath({ amp: 10 + i * 4, phase: i * 2, base: 30 + i * 10 })} fill="var(--oil)" fillOpacity={i ? 0.14 : 0.1} />
+          </motion.svg>
+        ))}
+      </div>
       <div className="container" style={{ position: 'relative' }}>
         <p className="eyebrow">Couche 07 · Réservoir atteint</p>
         {/* Le déclenchement se fait sur le titre : les mots, masqués par overflow: hidden, ne seraient jamais « visibles ». */}

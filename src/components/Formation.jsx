@@ -1,5 +1,6 @@
 import { useRef } from 'react';
-import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
+import { motion, useReducedMotion, useTransform } from 'framer-motion';
+import { useSmoothScroll } from '../hooks.js';
 import { education } from '../data.js';
 
 // --- Géométrie d'une coupe sismique stylisée : un anticlinal faillé qui piège des hydrocarbures ---
@@ -82,7 +83,7 @@ function Reveal({ progress, range, reduce, children, ...rest }) {
 export default function Formation() {
   const ref = useRef(null);
   const reduce = useReducedMotion();
-  const { scrollYProgress: p } = useScroll({ target: ref, offset: ['start start', 'end end'] });
+  const p = useSmoothScroll(ref);
 
   const faultOpacity = useTransform(p, [0.46, 0.56], [0, 0.8]);
   const oilScale = useTransform(p, [0.58, 0.72], [0, 1]);
@@ -122,6 +123,13 @@ export default function Formation() {
               <title id="seismic-title">
                 Coupe sismique stylisée : un anticlinal faillé piège des hydrocarbures, atteint par un forage.
               </title>
+              <defs>
+                <linearGradient id="sweep" x1="0" x2="1">
+                  <stop offset="0" stopColor="var(--seismic)" stopOpacity="0" />
+                  <stop offset="0.85" stopColor="var(--seismic)" stopOpacity="0.16" />
+                  <stop offset="1" stopColor="var(--seismic)" stopOpacity="0" />
+                </linearGradient>
+              </defs>
               <g stroke="#cbbfae" strokeOpacity="0.07" fill="none">
                 {TRACES.map((d, i) => (
                   <path key={i} d={d} />
@@ -138,6 +146,27 @@ export default function Formation() {
                   transformBox: 'fill-box',
                 }}
               />
+              {!reduce && (
+                <motion.path
+                  d={RESERVOIR}
+                  fill="#fff3d6"
+                  style={{ opacity: oilOpacity }}
+                  animate={{ fillOpacity: [0, 0.22, 0] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                />
+              )}
+              {/* Balayage sismique permanent : une onde parcourt la coupe en boucle. */}
+              {!reduce && (
+                <motion.rect
+                  y="0"
+                  width="60"
+                  height={H}
+                  fill="url(#sweep)"
+                  initial={{ x: -60 }}
+                  animate={{ x: W }}
+                  transition={{ duration: 4.5, repeat: Infinity, ease: 'linear', repeatDelay: 0.8 }}
+                />
+              )}
               {HORIZONS.map((d, i) => (
                 <Horizon key={i} d={d} index={i} progress={p} reduce={reduce} />
               ))}
@@ -161,6 +190,18 @@ export default function Formation() {
               <motion.g style={{ opacity: reduce ? 1 : legendOpacity }}>
                 <path d={`M${CREST_X - 12} 20 L${CREST_X} 2 L${CREST_X + 12} 20 M${CREST_X - 7} 12 H${CREST_X + 7}`} fill="none" stroke="var(--fg)" />
                 <circle cx={CREST_X} cy={CREST_Y + 14} r="5" fill="var(--fg)" />
+                {!reduce && (
+                  <motion.circle
+                    cx={CREST_X}
+                    cy={CREST_Y + 14}
+                    r="5"
+                    fill="none"
+                    stroke="var(--oil)"
+                    strokeWidth="2"
+                    animate={{ r: [5, 22], opacity: [0.9, 0] }}
+                    transition={{ duration: 1.8, repeat: Infinity, ease: 'easeOut' }}
+                  />
+                )}
               </motion.g>
             </svg>
             <figcaption className="seismic__caption">Profil sismique · illustration</figcaption>

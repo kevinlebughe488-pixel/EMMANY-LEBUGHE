@@ -454,10 +454,24 @@ p {
   background: var(--oil);
   box-shadow: 0 0 0 4px rgba(232, 163, 61, 0.2);
 }
+.hero__portrait-wrap {
+  position: relative;
+  justify-self: center;
+  width: min(100%, 360px);
+}
+.hero__rings {
+  position: absolute;
+  width: 124%;
+  height: auto;
+  aspect-ratio: 1;
+  top: 50%;
+  left: -12%;
+  translate: 0 -50%;
+  pointer-events: none;
+}
 .hero__portrait {
   position: relative;
-  width: min(100%, 360px);
-  justify-self: center;
+  width: 100%;
   aspect-ratio: 4 / 5;
   border-radius: 999px 999px var(--radius) var(--radius);
   overflow: hidden;
@@ -465,7 +479,7 @@ p {
   box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.8);
 }
 @media (max-width: 899px) {
-  .hero__portrait {
+  .hero__portrait-wrap {
     width: min(46vw, 220px);
     order: -1;
   }
@@ -505,19 +519,148 @@ p {
 /* ------------------------------------------------------------------
    Profil : révélation mot à mot
    ------------------------------------------------------------------ */
-.reveal-text {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: clamp(1.55rem, 4.2vw, 3.3rem);
-  line-height: 1.18;
-  letter-spacing: -0.02em;
-  margin-top: 2rem;
+.profile__grid {
+  display: grid;
+  gap: clamp(2.5rem, 6vw, 5rem);
+  align-items: center;
+  perspective: 1200px;
 }
-.reveal-text__word {
+@media (min-width: 960px) {
+  .profile__grid {
+    grid-template-columns: 1.35fr 0.65fr;
+  }
+}
+.profile__title {
+  margin-top: 1rem;
+  font-size: clamp(2.2rem, 5.6vw, 4.4rem);
+  font-weight: 800;
+  text-wrap: balance;
+}
+.profile__text {
+  margin-top: 1.75rem;
+  max-width: 58ch;
+  font-size: clamp(1.05rem, 1.7vw, 1.3rem);
+  line-height: 1.7;
+  color: var(--fg-muted);
+}
+.profile__word {
   display: inline-block;
-  margin-right: 0.26em;
+  margin-right: 0.27em;
 }
+.profile__word.is-key {
+  color: var(--fg);
+  font-weight: 600;
+  background: linear-gradient(transparent 62%, rgba(232, 163, 61, 0.28) 62%);
+}
+.fact-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 14px 1fr;
+  gap: 1.25rem;
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+  border-radius: var(--radius);
+  background: linear-gradient(160deg, rgba(42, 33, 27, 0.92), rgba(22, 18, 15, 0.92));
+  border: 1px solid var(--border);
+  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.7);
+}
+.fact-card__core {
+  border-radius: 7px;
+  background: repeating-linear-gradient(
+    180deg,
+    var(--stratum-1) 0 18px,
+    var(--stratum-2) 18px 30px,
+    var(--oil-deep) 30px 36px,
+    var(--stratum-3) 36px 58px,
+    var(--stratum-4) 58px 72px
+  );
+  background-size: 100% 72px;
+  animation: core-flow 6s linear infinite;
+}
+@keyframes pipe-flow {
+  to {
+    background-position: 0 300%;
+  }
+}
+@keyframes core-flow {
+  to {
+    background-position: 0 72px;
+  }
+}
+.fact-card__label {
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--oil);
+  font-weight: 600;
+}
+.facts {
+  margin: 0.9rem 0 0;
+  display: grid;
+}
+.facts__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.95rem;
+}
+.facts__row dt {
+  color: var(--fg-faint);
+}
+.facts__row dd {
+  margin: 0;
+  text-align: right;
+  font-weight: 500;
+}
+.fact-card__status {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1.1rem;
+  font-size: 0.9rem;
+  color: var(--fg);
+}
+.pulse-dot {
+  position: relative;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--oil);
+}
+.pulse-dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--oil);
+  animation: pulse 2s ease-out infinite;
+}
+@keyframes pulse {
+  to {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+.ambient {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+main,
+.footer {
+  position: relative;
+  z-index: 1;
+}
+
 .traits {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 0;
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
@@ -551,7 +694,7 @@ p {
   overflow: hidden;
 }
 .formation {
-  height: 320vh;
+  height: 260vh;
 }
 .formation__grid {
   display: grid;
@@ -706,7 +849,9 @@ p {
 .drill__pipe-fill {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, var(--seismic), var(--oil));
+  background: linear-gradient(180deg, var(--seismic), var(--oil), #fff3d6, var(--oil), var(--seismic));
+  background-size: 100% 300%;
+  animation: pipe-flow 3s linear infinite;
   transform-origin: 50% 0;
   border-radius: inherit;
 }
@@ -742,7 +887,7 @@ p {
    Terrain : photo révélée en plein écran
    ------------------------------------------------------------------ */
 .terrain {
-  height: 400vh;
+  height: 320vh;
 }
 .terrain__stage {
   position: absolute;
@@ -779,6 +924,7 @@ p {
   padding-inline: var(--gutter);
 }
 .terrain__intro h2 {
+  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.6);
   font-size: clamp(2.6rem, 10vw, 8rem);
   font-weight: 900;
   text-transform: uppercase;
@@ -845,7 +991,7 @@ p {
    Compétences : sédimentation des couches
    ------------------------------------------------------------------ */
 .skills {
-  height: 330vh;
+  height: 270vh;
 }
 .skills__layout {
   display: grid;
@@ -876,6 +1022,14 @@ p {
     rgba(255, 255, 255, 0.025) 0 2px,
     transparent 2px 9px
   );
+}
+.stratum {
+  animation: strata-drift 12s linear infinite;
+}
+@keyframes strata-drift {
+  to {
+    background-position: 95.78px 0;
+  }
 }
 .stratum + .stratum {
   margin-top: 2px;
@@ -1027,6 +1181,22 @@ p {
   overflow: hidden;
   padding-block: clamp(6rem, 12vw, 9rem) clamp(3rem, 6vw, 4rem);
 }
+.reservoir__surface {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: clamp(60px, 9vw, 120px);
+  overflow: hidden;
+  pointer-events: none;
+}
+.reservoir__surface svg {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 200%;
+  height: 100%;
+}
 .reservoir__oil {
   position: absolute;
   inset: 0;
@@ -1150,6 +1320,12 @@ p {
    Mouvement réduit : pas d'épinglage, contenu à l'état final
    ------------------------------------------------------------------ */
 @media (prefers-reduced-motion: reduce) {
+  .fact-card__core,
+  .pulse-dot::after,
+  .stratum,
+  .drill__pipe-fill {
+    animation: none;
+  }
   html {
     scroll-behavior: auto;
   }

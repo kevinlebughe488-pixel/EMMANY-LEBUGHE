@@ -13,11 +13,22 @@ export const person = {
   whatsapp: 'https://wa.me/243820304793',
 };
 
-export const profile =
-  "Ingénieur en géologie pétrolière formé à l'Institut du Pétrole et du Gaz, je lis le sous-sol comme un récit : " +
-  'exploration, interprétation des données géologiques et géophysiques, caractérisation des systèmes pétroliers. ' +
-  "Passé par le Ministère des Hydrocarbures et façonné par le terrain, je cherche aujourd'hui un poste de géologue pétrolier junior, " +
+export const profileIntro = 'Lire le sous-sol, couche après couche.';
+
+export const profileText =
+  "Ingénieur en géologie pétrolière formé à l'Institut du Pétrole et du Gaz, je travaille sur l'exploration, " +
+  "l'interprétation des données géologiques et géophysiques et la caractérisation des systèmes pétroliers. " +
+  "Après un stage au Ministère des Hydrocarbures et plusieurs missions de terrain, je cherche un poste de géologue pétrolier junior, " +
   'en restant ouvert aux autres domaines de la géologie.';
+
+export const profileFacts = [
+  { label: 'Diplôme', value: 'Maîtrise · Ingénieur, 2026' },
+  { label: 'Spécialité', value: 'Géologie pétrolière' },
+  { label: 'Basé à', value: 'Kinshasa, RDC' },
+  { label: 'Logiciels', value: 'QGIS · ArcGIS · Petrel' },
+  { label: 'Langues', value: 'Français · Anglais' },
+  { label: 'Permis', value: 'B et 4×4' },
+];
 
 export const traits = ['Rigoureux', 'Analytique', 'Adaptable'];
 
