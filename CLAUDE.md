@@ -5,3 +5,4 @@
   `design-system/emmany-portfolio/MASTER.md` puis `pages/home.md` (qui prime).
 - Les animations doivent être progressives et liées au défilement, et respecter `prefers-reduced-motion`.
 - Vérifier le rendu à 390, 768, 1024 et 1440 px avant de pousser (`npm run build`).
+- Hébergement : Vercel (import du dépôt GitHub, déploiement automatique depuis `main`).

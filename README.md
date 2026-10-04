@@ -7,7 +7,7 @@ de la surface jusqu'au réservoir, avec des animations Framer Motion liées au s
 
 ```bash
 npm install
-npm run dev      # http://localhost:5173/EMMANY-LEBUGHE/
+npm run dev      # http://localhost:5173/
 npm run build    # génère dist/
 ```
 
@@ -15,10 +15,11 @@ npm run build    # génère dist/
 - Photos : déposer les originaux dans `photos-src/`, puis `npm run images` pour régénérer les WebP de `src/assets/`
 - Design : `design-system/emmany-portfolio/` (généré avec le skill UI UX Pro Max, dans `.claude/skills/`)
 
-## Mise en ligne
+## Mise en ligne (Vercel)
 
-Chaque push sur `main` déploie le site sur GitHub Pages (`.github/workflows/deploy.yml`).
-Dans **Settings → Pages**, la source doit être **GitHub Actions**.
+Sur vercel.com : **Add New → Project**, importer le dépôt `EMMANY-LEBUGHE`, puis **Deploy**.
+Vercel détecte Vite tout seul (`vercel.json` fixe la commande `npm run build` et le dossier `dist`).
+Ensuite, chaque push sur `main` met le site à jour, et chaque PR reçoit une URL de prévisualisation.
 
 ## Suivi d'audience (Google Tag Manager)
 
