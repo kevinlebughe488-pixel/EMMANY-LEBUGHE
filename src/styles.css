@@ -335,6 +335,7 @@ p {
   flex-direction: column;
   padding: calc(var(--nav-h) + 1rem) var(--gutter) 2rem;
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .mobile-menu__close {
   position: absolute;

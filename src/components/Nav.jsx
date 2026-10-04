@@ -18,10 +18,17 @@ export default function Nav({ active, progress }) {
     if (!open) return;
     const onKey = (e) => e.key === 'Escape' && setOpen(false);
     document.addEventListener('keydown', onKey);
-    document.body.style.overflow = 'hidden';
+    // Fige la page derrière le menu. « overflow: hidden » seul ne suffit pas (iPhone, et
+    // <html> a déjà un overflow-x) : on fixe le body à sa position actuelle, puis on la rend.
+    const y = window.scrollY;
+    const { body, documentElement: html } = document;
+    Object.assign(body.style, { position: 'fixed', top: `-${y}px`, left: '0', right: '0', width: '100%' });
+    html.style.overflow = 'hidden';
     return () => {
       document.removeEventListener('keydown', onKey);
-      document.body.style.overflow = '';
+      Object.assign(body.style, { position: '', top: '', left: '', right: '', width: '' });
+      html.style.overflow = '';
+      window.scrollTo({ top: y, behavior: 'instant' });
       toggleRef.current?.focus({ preventScroll: true });
     };
   }, [open]);
