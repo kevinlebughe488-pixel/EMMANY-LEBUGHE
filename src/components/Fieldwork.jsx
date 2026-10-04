@@ -3,10 +3,10 @@ import { motion, useReducedMotion, useTransform } from 'framer-motion';
 import { useSmoothScroll } from '../hooks.js';
 import { fieldwork } from '../data.js';
 import terrain810 from '../assets/terrain-810.webp';
-import terrain1620 from '../assets/terrain-1620.webp';
-import terrain2430 from '../assets/terrain-2430.webp';
+import terrain1179 from '../assets/terrain-1179.webp';
+import terrain2358 from '../assets/terrain-2358.webp';
 
-const SRCSET = `${terrain810} 810w, ${terrain1620} 1620w, ${terrain2430} 2430w`;
+const SRCSET = `${terrain810} 810w, ${terrain1179} 1179w, ${terrain2358} 2358w`;
 const ALT = 'Pierre Emmanuel assis sur un rocher au pied d’une cascade, lors d’une sortie de terrain';
 const STEPS_START = 0.34;
 const STEP_SPAN = (1 - STEPS_START) / fieldwork.steps.length;
@@ -59,12 +59,12 @@ export default function Fieldwork() {
           <p className="eyebrow">Couche 04 · Terrain</p>
           <h2 className="section-title">Sur le terrain</h2>
           <img
-            src={terrain1620}
+            src={terrain1179}
             srcSet={SRCSET}
             sizes="min(100vw, 60vh)"
             alt={ALT}
-            width="810"
-            height="1080"
+            width="1179"
+            height="1572"
             loading="lazy"
             style={{ marginTop: '2rem', borderRadius: 'var(--radius)', maxHeight: '80vh', width: 'auto' }}
           />
@@ -94,13 +94,13 @@ export default function Fieldwork() {
               transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
             >
             <motion.img
-              src={terrain1620}
+              src={terrain1179}
               srcSet={SRCSET}
               // La photo (portrait) couvre l'écran : sa largeur affichée est le max de la largeur et des 3/4 de la hauteur.
               sizes="max(100vw, 75vh)"
               alt={ALT}
-              width="810"
-              height="1080"
+              width="1179"
+              height="1572"
               loading="lazy"
               style={{ scale: imgScale }}
             />

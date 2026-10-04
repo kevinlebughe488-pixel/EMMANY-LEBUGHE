@@ -11,13 +11,13 @@ const jobs = [
   { src: 'photos-src/logo-cali.png', name: 'logo-cali', widths: [240] },
 ];
 
-// Photo de terrain : elle s'affiche en plein écran, bien au-delà de sa taille d'origine (810 × 1080).
+// Photo de terrain : elle s'affiche en plein écran, bien au-delà de sa taille d'origine (1179 × 1572).
 // On garde la pleine résolution sans recompression visible, et on prépare des versions agrandies
 // (interpolation Lanczos + léger renforcement de netteté) pour les grands écrans et les écrans haute densité.
-for (const w of [810, 1620, 2430]) {
+for (const w of [810, 1179, 2358]) {
   const file = `${out}/terrain-${w}.webp`;
   let img = sharp('photos-src/terrain.jpg').resize({ width: w, kernel: 'lanczos3' });
-  if (w > 810) img = img.sharpen({ sigma: 0.8, m1: 0.5, m2: 1.5 });
+  if (w > 1179) img = img.sharpen({ sigma: 0.8, m1: 0.5, m2: 1.5 });
   await img.webp({ quality: 90, smartSubsample: true, effort: 6 }).toFile(file);
   console.log('→', file);
 }
