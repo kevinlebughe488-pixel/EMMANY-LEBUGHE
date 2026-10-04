@@ -21,12 +21,11 @@ Sur vercel.com : **Add New → Project**, importer le dépôt `EMMANY-LEBUGHE`, 
 Vercel détecte Vite tout seul (`vercel.json` fixe la commande `npm run build` et le dossier `dist`).
 Ensuite, chaque push sur `main` met le site à jour, et chaque PR reçoit une URL de prévisualisation.
 
-## Suivi d'audience (Google Tag Manager)
+## Suivi d'audience
 
-Le site charge le conteneur Google Tag Manager `GTM-WFSNFKFZ` (`src/config.js`).
-Pour voir les visites dans Google Analytics, il faut, dans Tag Manager, ajouter une balise
-« Balise Google » avec l'identifiant GA4 (`G-XXXXXXXXXX`), déclenchée sur « All Pages », puis **Publier** le conteneur.
+Google Analytics 4 (`G-99N19MBP9J`) est chargé directement par le site, et le conteneur
+Google Tag Manager `GTM-WFSNFKFZ` aussi (`src/config.js`). Ne pas ajouter de balise GA4 avec le même
+identifiant dans Tag Manager, sinon les visites seraient comptées deux fois.
 
-Événements envoyés dans la couche de données : `section_view` (paramètre `section`) et
-`contact_click` (paramètre `method` : email, whatsapp, phone). Pour les retrouver dans GA4,
-créer dans Tag Manager un déclencheur « Événement personnalisé » par nom et une balise d'événement GA4.
+Événements envoyés à GA4 : `section_view` (paramètre `section`) et `contact_click`
+(paramètre `method` : email, whatsapp, phone).
