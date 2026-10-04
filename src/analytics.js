@@ -1,28 +1,41 @@
-import { GA_MEASUREMENT_ID } from './config.js';
+import { GA_MEASUREMENT_ID, GTM_ID } from './config.js';
 
 let ready = false;
 
-// Charge gtag.js une seule fois, uniquement si un identifiant GA4 est configuré.
-export function initAnalytics() {
-  if (ready || !GA_MEASUREMENT_ID || typeof window === 'undefined') return;
-  ready = true;
-
+function loadScript(src) {
   const script = document.createElement('script');
   script.async = true;
-  script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GA_MEASUREMENT_ID)}`;
+  script.src = src;
   document.head.appendChild(script);
+}
 
+// Charge Google Tag Manager (et GA4 en direct si un identifiant est fourni), une seule fois.
+export function initAnalytics() {
+  if (ready || typeof window === 'undefined' || (!GTM_ID && !GA_MEASUREMENT_ID)) return;
+  ready = true;
   window.dataLayer = window.dataLayer || [];
-  window.gtag = function gtag() {
-    window.dataLayer.push(arguments);
-  };
-  window.gtag('js', new Date());
-  window.gtag('config', GA_MEASUREMENT_ID);
+
+  if (GTM_ID) {
+    window.dataLayer.push({ 'gtm.start': Date.now(), event: 'gtm.js' });
+    loadScript(`https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(GTM_ID)}`);
+  }
+
+  if (GA_MEASUREMENT_ID) {
+    loadScript(`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GA_MEASUREMENT_ID)}`);
+    window.gtag = function gtag() {
+      window.dataLayer.push(arguments);
+    };
+    window.gtag('js', new Date());
+    window.gtag('config', GA_MEASUREMENT_ID);
+  }
 }
 
 // Envoie un événement personnalisé (clic sur un contact, section consultée…).
+// Avec Tag Manager, il arrive dans la couche de données sous le même nom.
 export function track(event, params = {}) {
-  if (ready && window.gtag) window.gtag('event', event, params);
+  if (!ready) return;
+  if (GA_MEASUREMENT_ID && window.gtag) window.gtag('event', event, params);
+  else window.dataLayer.push({ event, ...params });
 }
 
 // Mesure jusqu'où les visiteurs descendent : un événement « section_view » par section, une fois par visite.

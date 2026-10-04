@@ -20,9 +20,12 @@ npm run build    # génère dist/
 Chaque push sur `main` déploie le site sur GitHub Pages (`.github/workflows/deploy.yml`).
 Dans **Settings → Pages**, la source doit être **GitHub Actions**.
 
-## Google Analytics
+## Suivi d'audience (Google Tag Manager)
 
-Le suivi GA4 se charge seulement si un identifiant de mesure (`G-XXXXXXXXXX`) est fourni :
-ajouter une variable de dépôt `GA_MEASUREMENT_ID` dans **Settings → Secrets and variables → Actions → Variables**,
-ou l'écrire directement dans `src/config.js`. Événements envoyés : `section_view` (sections consultées)
-et `contact_click` (e-mail, WhatsApp, téléphone).
+Le site charge le conteneur Google Tag Manager `GTM-WFSNFKFZ` (`src/config.js`).
+Pour voir les visites dans Google Analytics, il faut, dans Tag Manager, ajouter une balise
+« Balise Google » avec l'identifiant GA4 (`G-XXXXXXXXXX`), déclenchée sur « All Pages », puis **Publier** le conteneur.
+
+Événements envoyés dans la couche de données : `section_view` (paramètre `section`) et
+`contact_click` (paramètre `method` : email, whatsapp, phone). Pour les retrouver dans GA4,
+créer dans Tag Manager un déclencheur « Événement personnalisé » par nom et une balise d'événement GA4.
