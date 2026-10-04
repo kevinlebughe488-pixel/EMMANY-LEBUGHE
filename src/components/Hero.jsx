@@ -58,7 +58,7 @@ export default function Hero() {
   const scrollYProgress = useSmoothScroll(ref);
 
   const contentY = useTransform(scrollYProgress, [0, 0.8], ['0vh', '-18vh']);
-  const contentOpacity = useTransform(scrollYProgress, [0.35, 0.75], [1, 0]);
+  const contentOpacity = useTransform(scrollYProgress, [0.3, 0.6], [1, 0]);
   const portraitScale = useTransform(scrollYProgress, [0, 0.8], [1, 0.82]);
   const portraitRotate = useTransform(scrollYProgress, [0, 0.8], [0, -4]);
   const cueOpacity = useTransform(scrollYProgress, [0, 0.12], [1, 0]);

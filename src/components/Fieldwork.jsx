@@ -2,9 +2,11 @@ import { useRef } from 'react';
 import { motion, useReducedMotion, useTransform } from 'framer-motion';
 import { useSmoothScroll } from '../hooks.js';
 import { fieldwork } from '../data.js';
-import terrain600 from '../assets/terrain-600.webp';
 import terrain810 from '../assets/terrain-810.webp';
+import terrain1620 from '../assets/terrain-1620.webp';
+import terrain2430 from '../assets/terrain-2430.webp';
 
+const SRCSET = `${terrain810} 810w, ${terrain1620} 1620w, ${terrain2430} 2430w`;
 const ALT = 'Pierre Emmanuel assis sur un rocher au pied d’une cascade, lors d’une sortie de terrain';
 const STEPS_START = 0.34;
 const STEP_SPAN = (1 - STEPS_START) / fieldwork.steps.length;
@@ -45,7 +47,7 @@ export default function Fieldwork() {
     [0, 0.3],
     ['inset(28% 30% 28% 30% round 28px)', 'inset(0% 0% 0% 0% round 0px)'],
   );
-  const imgScale = useTransform(p, [0, 0.3, 1], [1.35, 1.08, 1]);
+  const imgScale = useTransform(p, [0, 0.3, 1], [1.2, 1.05, 1]);
   const introScale = useTransform(p, [0, 0.3], [1, 1.25]);
   const introOpacity = useTransform(p, [0.18, 0.3], [1, 0]);
   const shadeOpacity = useTransform(p, [0.22, 0.36], [0, 1]);
@@ -57,7 +59,9 @@ export default function Fieldwork() {
           <p className="eyebrow">Couche 04 · Terrain</p>
           <h2 className="section-title">Sur le terrain</h2>
           <img
-            src={terrain810}
+            src={terrain1620}
+            srcSet={SRCSET}
+            sizes="min(100vw, 60vh)"
             alt={ALT}
             width="810"
             height="1080"
@@ -86,13 +90,14 @@ export default function Fieldwork() {
             {/* Lent mouvement de caméra permanent (effet Ken Burns), même à l'arrêt. */}
             <motion.div
               style={{ position: 'absolute', inset: 0 }}
-              animate={{ scale: [1, 1.07, 1], x: ['0%', '-1.5%', '0%'] }}
+              animate={{ scale: [1, 1.05, 1], x: ['0%', '-1.5%', '0%'] }}
               transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
             >
             <motion.img
-              src={terrain810}
-              srcSet={`${terrain600} 600w, ${terrain810} 810w`}
-              sizes="100vw"
+              src={terrain1620}
+              srcSet={SRCSET}
+              // La photo (portrait) couvre l'écran : sa largeur affichée est le max de la largeur et des 3/4 de la hauteur.
+              sizes="max(100vw, 75vh)"
               alt={ALT}
               width="810"
               height="1080"
